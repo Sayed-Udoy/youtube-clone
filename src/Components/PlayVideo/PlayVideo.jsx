@@ -2,10 +2,8 @@ import React from "react";
 import DislikeIcon from "../../assets/dislike.png";
 import { default as Jack, default as UserProfile } from "../../assets/jack.png";
 import LikeIcon from "../../assets/like.png";
-import {
-  default as SaveIcon,
-  default as ShareIcon,
-} from "../../assets/share.png";
+import SaveIcon from "../../assets/save.png";
+import ShareIcon from "../../assets/share.png";
 import Video1 from "../../assets/video.mp4";
 import "./PlayVideo.css";
 
@@ -27,11 +25,11 @@ const PlayVideo = () => {
           </span>
           <span>
             <img src={ShareIcon} alt="" />
-            125
+            Share
           </span>
           <span>
             <img src={SaveIcon} alt="" />
-            125
+            Save
           </span>
         </div>
       </div>
@@ -70,7 +68,6 @@ const PlayVideo = () => {
               <img src={LikeIcon} alt="" />
               <span>244</span>
               <img src={DislikeIcon} alt="" />
-
             </div>
           </div>
         </div>
@@ -90,7 +87,6 @@ const PlayVideo = () => {
               <img src={LikeIcon} alt="" />
               <span>244</span>
               <img src={DislikeIcon} alt="" />
-
             </div>
           </div>
         </div>
@@ -110,7 +106,6 @@ const PlayVideo = () => {
               <img src={LikeIcon} alt="" />
               <span>244</span>
               <img src={DislikeIcon} alt="" />
-
             </div>
           </div>
         </div>
@@ -130,7 +125,6 @@ const PlayVideo = () => {
               <img src={LikeIcon} alt="" />
               <span>244</span>
               <img src={DislikeIcon} alt="" />
-
             </div>
           </div>
         </div>
