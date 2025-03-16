@@ -1,3 +1,4 @@
+import moment from "moment";
 import React, { useEffect, useState } from "react";
 import DislikeIcon from "../../assets/dislike.png";
 import { default as Jack, default as UserProfile } from "../../assets/jack.png";
@@ -6,24 +7,38 @@ import SaveIcon from "../../assets/save.png";
 import ShareIcon from "../../assets/share.png";
 import { API_KEY, valueConverter } from "../../data";
 import "./PlayVideo.css";
-import moment from "moment";
 
 const PlayVideo = ({ videoId, categoryId }) => {
   const [apiData, setApiData] = useState(null);
+  const [channelData, setChannelData] = useState(null);
 
+  const fetchVideoDetails = async () => {
+    const res = await fetch(
+      `https://www.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&id=${videoId}&key=${API_KEY}`
+    );
+    if (res.status === 200) {
+      const data = await res.json();
+      setApiData(data.items[0]);
+    }
+  };
+  const fetchOtherData = async () => {
+    // Fetching Channel Data
+    const res = await fetch(
+      `https://www.googleapis.com/youtube/v3/channels?part=snippet%2CcontentDetails%2Cstatistics&id=${apiData?.snippet?.channelId}&key=${API_KEY}`
+    );
+    if (res.status === 200) {
+      const data = await res.json();
+      setChannelData(data.items[0])
+    }
+  };
   useEffect(() => {
-    const fetchVideoDetails = async () => {
-      const res = await fetch(
-        `https://www.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&id=${videoId}&key=${API_KEY}`
-      );
-      if(res.status === 200){
-        const data = await res.json();
-        setApiData(data.items[0])
-      }
-    };
     fetchVideoDetails();
-  }, [videoId]);
-  console.log(apiData)
+  }, []);
+  
+  useEffect(() => {
+    fetchOtherData();
+  }, [apiData]);
+  console.log(channelData)
   return (
     <div className="play-video">
       {/* <video src={Video1} controls muted autoPlay></video> */}
@@ -35,7 +50,10 @@ const PlayVideo = ({ videoId, categoryId }) => {
       ></iframe>
       <h3>{apiData?.snippet?.title}</h3>
       <div className="play-video-info">
-        <p>{valueConverter(apiData?.statistics?.viewCount)} &bull; {moment(apiData?.snippet?.publishedAt).fromNow()}</p>
+        <p>
+          {valueConverter(apiData?.statistics?.viewCount)} &bull;{" "}
+          {moment(apiData?.snippet?.publishedAt).fromNow()}
+        </p>
         <div>
           <span>
             <img src={LikeIcon} alt="" />
@@ -58,7 +76,7 @@ const PlayVideo = ({ videoId, categoryId }) => {
       <hr />
       {/* Publisher  */}
       <div className="publisher">
-        <img src={Jack} alt="" />
+        <img src={channelData?.snippet?.thumbnails?.medium?.url} alt="" />
         <div>
           <p>{apiData?.snippet?.channelTitle}</p>
           {/* subscriber details  */}
@@ -68,7 +86,7 @@ const PlayVideo = ({ videoId, categoryId }) => {
       </div>
       {/* Descrebsiton  */}
       <div className="vid-description">
-        <p>{apiData?.snippet?.localized?.description}</p>
+        <p>{apiData?.snippet?.localized?.description.slice(0, 200)}</p>
         <p>{apiData?.snippet?.localized?.title}</p>
         <hr />
         {/* comments  */}
