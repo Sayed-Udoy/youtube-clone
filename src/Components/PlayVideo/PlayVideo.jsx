@@ -1,23 +1,45 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import DislikeIcon from "../../assets/dislike.png";
 import { default as Jack, default as UserProfile } from "../../assets/jack.png";
 import LikeIcon from "../../assets/like.png";
 import SaveIcon from "../../assets/save.png";
 import ShareIcon from "../../assets/share.png";
-import Video1 from "../../assets/video.mp4";
+import { API_KEY, valueConverter } from "../../data";
 import "./PlayVideo.css";
+import moment from "moment";
 
-const PlayVideo = () => {
+const PlayVideo = ({ videoId, categoryId }) => {
+  const [apiData, setApiData] = useState(null);
+
+  useEffect(() => {
+    const fetchVideoDetails = async () => {
+      const res = await fetch(
+        `https://www.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&id=${videoId}&key=${API_KEY}`
+      );
+      if(res.status === 200){
+        const data = await res.json();
+        setApiData(data.items[0])
+      }
+    };
+    fetchVideoDetails();
+  }, [videoId]);
+  console.log(apiData)
   return (
     <div className="play-video">
-      <video src={Video1} controls muted autoPlay></video>
-      <h3>Best youtube channel To learn web development</h3>
+      {/* <video src={Video1} controls muted autoPlay></video> */}
+      <iframe
+        src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerPolicy="strict-origin-when-cross-origin"
+        allowFullScreen={true}
+      ></iframe>
+      <h3>{apiData?.snippet?.title}</h3>
       <div className="play-video-info">
-        <p>1525 views &bull; 2 days ago</p>
+        <p>{valueConverter(apiData?.statistics?.viewCount)} &bull; {moment(apiData?.snippet?.publishedAt).fromNow()}</p>
         <div>
           <span>
             <img src={LikeIcon} alt="" />
-            125
+            {valueConverter(apiData?.statistics?.likeCount)}
           </span>
           <span>
             <img src={DislikeIcon} alt="" />
@@ -38,19 +60,19 @@ const PlayVideo = () => {
       <div className="publisher">
         <img src={Jack} alt="" />
         <div>
-          <p>Greatstack</p>
+          <p>{apiData?.snippet?.channelTitle}</p>
           {/* subscriber details  */}
           <span>1M Subscriber</span>
         </div>
         <button>Subscribe</button>
       </div>
       {/* Descrebsiton  */}
-      <div className="vid-description" >
-        <p>Channel thats makes learning easy</p>
-        <p>Subscribe GreatStack to watch more tutorial on web development</p>
+      <div className="vid-description">
+        <p>{apiData?.snippet?.localized?.description}</p>
+        <p>{apiData?.snippet?.localized?.title}</p>
         <hr />
         {/* comments  */}
-        <h4>130 Comments</h4>
+        <h4>{valueConverter(apiData?.statistics?.commentCount)} Comments</h4>
         {/* all comments have been renderd here */}
         <div className="comment">
           <img src={UserProfile} alt="" />

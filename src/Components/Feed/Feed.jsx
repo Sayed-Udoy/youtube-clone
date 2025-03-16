@@ -23,7 +23,6 @@ const Feed = ({ category }) => {
     };
     fetchData();
   }, [category]);
-  console.log(data);
   return (
     <div className="feed">
       {data.length <= 0 ? (

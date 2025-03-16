@@ -29,9 +29,9 @@ const Sidebar = ({ sidebar, category, setCategory }) => {
           <p>Game</p>
         </div>
 
-        <div className={`side-link ${category === 40 ? "active" : ''}`} onClick={() => setCategory(40)}>
+        <div className={`side-link ${category === 40 ? "active" : ''}`} onClick={() => setCategory(23)}>
           <img src={AutoMobilesIcon} alt="" />
-          <p>Sci-Fi/Fantasy</p>
+          <p>Comedy</p>
         </div>
 
         <div className={`side-link ${category === 17 ? "active" : ''} `} onClick={() => setCategory(17)}>
@@ -44,9 +44,9 @@ const Sidebar = ({ sidebar, category, setCategory }) => {
           <p>Entertainment</p>
         </div>
 
-        <div className={`side-link ${category === 41 ? "active" : ''}`} onClick={() => setCategory(41)}>
+        <div className={`side-link ${category === 41 ? "active" : ''}`} onClick={() => setCategory(28)}>
           <img src={TechIcon} alt="" />
-          <p>Thriller</p>
+          <p>Science </p>
         </div>
 
         <div className={`side-link ${category === 10 ? "active" : ''}`} onClick={() => setCategory(10)}>

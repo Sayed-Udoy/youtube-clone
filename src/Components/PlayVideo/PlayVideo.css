@@ -9,6 +9,10 @@
   font-weight: 600;
   font-size: 22px;
 }
+.play-video iframe{
+  width: 100%;
+  height: 37vw;
+}
 .play-video-info {
   display: flex;
   align-items:center;
