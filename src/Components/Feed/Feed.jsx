@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
-import { API_KEY } from "../../data";
+import { API_KEY, valueConverter } from "../../data";
 import "./Feed.css";
+import moment from "moment";
 
 const Feed = ({ category }) => {
   const [data, setData] = useState([]);
@@ -28,14 +29,18 @@ const Feed = ({ category }) => {
       {data.length <= 0 ? (
         <div>No Videos Available</div>
       ) : (
-        data.map((yVideos) => (
-          <Link to={`video/${yVideos.snippet.categoryId}/${yVideos.id}`} key={yVideos.id} className="card">
-            <img src={yVideos.snippet.thumbnails.high.url} alt="" />
-            <h2>
-            {yVideos.snippet.title}
-            </h2>
-            <h3>{yVideos.snippet.channelTitle}</h3>
-            <p>15k views &bull; 2 days ago</p>
+        data.map((yVideo) => (
+          <Link
+            to={`video/${yVideo.snippet.categoryId}/${yVideo.id}`}
+            key={yVideo.id}
+            className="card"
+          >
+            <img src={yVideo.snippet.thumbnails.high.url} alt="" />
+            <h2>{yVideo.snippet.title}</h2>
+            <h3>{yVideo.snippet.channelTitle}</h3>
+            <p>
+              {valueConverter(yVideo.statistics.viewCount)} Views &bull; {moment(yVideo.snippet.publishedAt).fromNow()}
+            </p>
           </Link>
         ))
       )}
