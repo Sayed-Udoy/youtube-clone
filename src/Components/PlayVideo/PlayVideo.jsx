@@ -1,24 +1,33 @@
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import DislikeIcon from "../../assets/dislike.png";
-import { default as Jack, default as UserProfile } from "../../assets/jack.png";
+import { default as UserProfile } from "../../assets/jack.png";
 import LikeIcon from "../../assets/like.png";
 import SaveIcon from "../../assets/save.png";
 import ShareIcon from "../../assets/share.png";
 import { API_KEY, valueConverter } from "../../data";
 import "./PlayVideo.css";
 
-const PlayVideo = ({ videoId, categoryId }) => {
+const PlayVideo = ({ videoId}) => {
   const [apiData, setApiData] = useState(null);
   const [channelData, setChannelData] = useState(null);
+  const [commentData, setCommentData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchVideoDetails = async () => {
-    const res = await fetch(
-      `https://www.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&id=${videoId}&key=${API_KEY}`
-    );
-    if (res.status === 200) {
-      const data = await res.json();
-      setApiData(data.items[0]);
+    setIsLoading(true);
+    try {
+      const res = await fetch(
+        `https://www.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&id=${videoId}&key=${API_KEY}`
+      );
+      if (res.status === 200) {
+        const data = await res.json();
+        setApiData(data.items[0]);
+      }
+    } catch (error) {
+      console.log(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
   const fetchOtherData = async () => {
@@ -28,17 +37,31 @@ const PlayVideo = ({ videoId, categoryId }) => {
     );
     if (res.status === 200) {
       const data = await res.json();
-      setChannelData(data.items[0])
+      setChannelData(data.items[0]);
+    }
+  };
+  const fetchCommentData = async () => {
+    const res = await fetch(
+      `https://www.googleapis.com/youtube/v3/commentThreads?part=snippet%2Creplies&maxResults=50&videoId=${videoId}&key=${API_KEY}`
+    );
+    if (res.status === 200) {
+      const data = await res.json();
+      setCommentData(data.items);
     }
   };
   useEffect(() => {
     fetchVideoDetails();
-  }, []);
-  
+  }, [videoId]);
+
   useEffect(() => {
     fetchOtherData();
-  }, [apiData]);
-  console.log(channelData)
+    fetchCommentData();
+  }, [apiData,videoId]);
+
+
+  if (isLoading) {
+    return <div>Loading....</div>;
+  }
   return (
     <div className="play-video">
       {/* <video src={Video1} controls muted autoPlay></video> */}
@@ -80,7 +103,10 @@ const PlayVideo = ({ videoId, categoryId }) => {
         <div>
           <p>{apiData?.snippet?.channelTitle}</p>
           {/* subscriber details  */}
-          <span>1M Subscriber</span>
+          <span>
+            {valueConverter(channelData?.statistics?.subscriberCount)}{" "}
+            Subscriber
+          </span>
         </div>
         <button>Subscribe</button>
       </div>
@@ -92,82 +118,30 @@ const PlayVideo = ({ videoId, categoryId }) => {
         {/* comments  */}
         <h4>{valueConverter(apiData?.statistics?.commentCount)} Comments</h4>
         {/* all comments have been renderd here */}
-        <div className="comment">
-          <img src={UserProfile} alt="" />
-          <div>
-            <h3>
-              Jack Nicolson
-              <span>1 day ago</span>
-            </h3>
-            <p>
-              A global computer network providing a varitey of infromation and
-              of interconnected networks using standarrds communication
-            </p>
-            {/* comment action  */}
-            <div className="comment-action">
-              <img src={LikeIcon} alt="" />
-              <span>244</span>
-              <img src={DislikeIcon} alt="" />
+        {commentData <= 0 ? (
+          <div>No Comment here</div>
+        ) : (
+          commentData.map((comment) => (
+            <div key={comment.id} className="comment">
+              <img src={comment?.snippet?.topLevelComment?.snippet?.authorProfileImageUrl??UserProfile} alt="" />
+              <div>
+                <h3>
+                  {comment?.snippet?.topLevelComment?.snippet?.authorDisplayName}
+                  <span>{moment(comment?.snippet?.topLevelComment?.snippet?.updatedAt).fromNow()}</span>
+                </h3>
+                <p>
+                {comment?.snippet?.topLevelComment?.snippet?.textDisplay}
+                </p>
+                {/* comment action  */}
+                <div className="comment-action">
+                  <img src={LikeIcon} alt="" />
+                  <span>{valueConverter(comment?.snippet?.topLevelComment?.snippet?.likeCount)}</span>
+                  <img src={DislikeIcon} alt="" />
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-        <div className="comment">
-          <img src={UserProfile} alt="" />
-          <div>
-            <h3>
-              Jack Nicolson
-              <span>1 day ago</span>
-            </h3>
-            <p>
-              A global computer network providing a varitey of infromation and
-              of interconnected networks using standarrds communication
-            </p>
-            {/* comment action  */}
-            <div className="comment-action">
-              <img src={LikeIcon} alt="" />
-              <span>244</span>
-              <img src={DislikeIcon} alt="" />
-            </div>
-          </div>
-        </div>
-        <div className="comment">
-          <img src={UserProfile} alt="" />
-          <div>
-            <h3>
-              Jack Nicolson
-              <span>1 day ago</span>
-            </h3>
-            <p>
-              A global computer network providing a varitey of infromation and
-              of interconnected networks using standarrds communication
-            </p>
-            {/* comment action  */}
-            <div className="comment-action">
-              <img src={LikeIcon} alt="" />
-              <span>244</span>
-              <img src={DislikeIcon} alt="" />
-            </div>
-          </div>
-        </div>
-        <div className="comment">
-          <img src={UserProfile} alt="" />
-          <div>
-            <h3>
-              Jack Nicolson
-              <span>1 day ago</span>
-            </h3>
-            <p>
-              A global computer network providing a varitey of infromation and
-              of interconnected networks using standarrds communication
-            </p>
-            {/* comment action  */}
-            <div className="comment-action">
-              <img src={LikeIcon} alt="" />
-              <span>244</span>
-              <img src={DislikeIcon} alt="" />
-            </div>
-          </div>
-        </div>
+          ))
+        )}
       </div>
     </div>
   );

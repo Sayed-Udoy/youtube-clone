@@ -1,74 +1,45 @@
-import "./Recomended.css"
-import thumbnail1 from "../../assets/thumbnail1.png"
-import thumbnail2 from "../../assets/thumbnail2.png"
-import thumbnail3 from "../../assets/thumbnail3.png"
-import thumbnail4 from "../../assets/thumbnail4.png"
-import thumbnail5 from "../../assets/thumbnail5.png"
-import thumbnail6 from "../../assets/thumbnail6.png"
-import thumbnail7 from "../../assets/thumbnail7.png"
-import thumbnail78 from "../../assets/thumbnail8.png"
+import { useEffect, useState } from "react";
+import { Link } from "react-router";
+import { API_KEY, valueConverter } from "../../data";
+import "./Recomended.css";
 
-const Recomended = () => {
+const Recomended = ({ categoryId }) => {
+  const [reletedData, setReletedData] = useState([]);
+
+  const fetchData = async () => {
+    try {
+      const res = await fetch(
+        `https://www.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&chart=mostPopular&videoCategoryId=${categoryId}&maxResults=50&key=${API_KEY}`
+      );
+      const data = await res.json();
+      setReletedData(data.items);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
+  console.log(reletedData);
   return (
-    <div className="recomended" >
-      <div className="side-video-list">
-        <img src={thumbnail1} alt="" />
-        <div className="vid-info">
-          <h4>Best channel that help you to be a web developer</h4>
-          <p>Great Stact</p>
-          <p>199k Views</p>
-        </div>
-      </div>
-      <div className="side-video-list">
-        <img src={thumbnail2} alt="" />
-        <div className="vid-info">
-          <h4>Best channel that help you to be a web developer</h4>
-          <p>Great Stact</p>
-          <p>199k Views</p>
-        </div>
-      </div>
-      <div className="side-video-list">
-        <img src={thumbnail3} alt="" />
-        <div className="vid-info">
-          <h4>Best channel that help you to be a web developer</h4>
-          <p>Great Stact</p>
-          <p>199k Views</p>
-        </div>3
-      </div>
-      <div className="side-video-list">
-        <img src={thumbnail4} alt="" />
-        <div className="vid-info">
-          <h4>Best channel that help you to be a web developer</h4>
-          <p>Great Stact</p>
-          <p>199k Views</p>
-        </div>
-      </div>
-      <div className="side-video-list">
-        <img src={thumbnail5} alt="" />
-        <div className="vid-info">
-          <h4>Best channel that help you to be a web developer</h4>
-          <p>Great Stact</p>
-          <p>199k Views</p>
-        </div>
-      </div>
-      <div className="side-video-list">
-        <img src={thumbnail6} alt="" />
-        <div className="vid-info">
-          <h4>Best channel that help you to be a web developer</h4>
-          <p>Great Stact</p>
-          <p>199k Views</p>
-        </div>
-      </div>
-      <div className="side-video-list">
-        <img src={thumbnail7} alt="" />
-        <div className="vid-info">
-          <h4>Best channel that help you to be a web developer</h4>
-          <p>Great Stact</p>
-          <p>199k Views</p>
-        </div>
-      </div>
+    <div className="recomended">
+      {reletedData &&
+        reletedData.map((data) => (
+          <Link
+          key={data.id}
+            to={`/video/${data.categoryId}/${data.id}`}
+            className="side-video-list"
+          >
+            <img src={data?.snippet?.thumbnails?.high?.url} alt="" />
+            <div className="vid-info">
+              <h4>{data?.snippet?.title.slice(0, 60)}....</h4>
+              <p>{data?.snippet?.channelTitle}</p>
+              <p>{valueConverter(data?.statistics?.viewCount)} Views</p>
+            </div>
+          </Link>
+        ))}
     </div>
-  )
-}
+  );
+};
 
-export default Recomended
+export default Recomended;

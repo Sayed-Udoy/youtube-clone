@@ -22,7 +22,7 @@ const Navbar = ({ setSidebar }) => {
           alt=""
         />
         <Link to="/">
-          <img className="logo" src={Logo} alt="" />
+          <h1>MyTube</h1>
         </Link>
       </div>
 
